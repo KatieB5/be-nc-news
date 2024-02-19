@@ -3,6 +3,8 @@ const request = require('supertest');
 const db = require('../db/connection');
 const seed = require('../db/seeds/seed');
 const data = require('../db/data/test-data/index.js');
+const fs = require('fs/promises');
+const endpointsFile = require('../endpoints.json');
 
 beforeEach(() => seed(data));
 
@@ -11,7 +13,7 @@ afterAll(() => {
 });
 
 describe('GET /api/topics', () => {
-    test('GET: 200, should respond with an array of topic objects, each of which should have the following properties: slug, description', () => {
+    test('GET: 200: should respond with an array of topic objects, each of which should have the following properties: slug, description', () => {
         return request(app)
         .get('/api/topics')
         .expect(200)
@@ -38,7 +40,19 @@ describe('GET /api/topics', () => {
         .get('/api/topicz')
         .expect(404)
         .then((response) => {
-            expect(response.body.msg).toBe("404 Not Found");
+            expect(response.body.msg).toBe("Endpoint does not exist");
         });
     });
 });
+
+describe('/api', () => {
+    test('GET 200: should respond with an object describing all the available endpoints on the nc news API', () => {
+        return request(app)
+        .get('/api')
+        .expect(200)
+        .then((response) => {
+            expect(response.body.endpoints).toEqual(endpointsFile);
+        });
+    });
+});
+
