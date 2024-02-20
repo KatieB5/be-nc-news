@@ -95,4 +95,44 @@ describe('GET /api/articles/', () => {
             });
         });
     });
+
+    describe('/api/articles', () => {
+        test('GET 200: should respond with an articles array of article objects, each of which should have the following properties: author, title, article_id, topic, created_at, votes, article_img_url, comment_count, (total count of all the comments with this article_id)', () => {
+            return request(app)
+            .get('/api/articles')
+            .expect(200)
+            .then(({body}) => {
+                expect(body.length).toBe(12);
+                body.forEach((article) => {
+                    expect(Object.keys(article)).toEqual(['article_id', 'title', 'topic', 'author', 'created_at', 'votes', 'article_img_url', 'comment_count']);
+                });
+            });
+        });
+        test('GET 200: array of article objects should be sorted by date in descending order', () => {
+            return request(app)
+            .get('/api/articles')
+            .expect(200)
+            .then(({body}) => {
+                expect(body).toBeSortedBy('created_at', {descending: true});
+            });
+        });
+        test('GET 200: should not have a body property present on any of the article objects', () => {
+            return request(app)
+            .get('/api/articles')
+            .expect(200)
+            .then(({body}) => {
+                body.forEach((article) => {
+                    expect(Object.keys(article)).not.toEqual(['article_id', 'title', 'topic', 'author', 'body', 'created_at', 'votes', 'article_img_url', 'comment_count']);
+                });
+            });
+        });
+        test('GET 404: should respond with a 400 if given a bad request', () => {
+            return request(app)
+            .get('/api/articlez')
+            .expect(404)
+            .then((response) => {
+                expect(response.body.msg).toBe("Endpoint does not exist");
+            });
+        });
+    });
 });

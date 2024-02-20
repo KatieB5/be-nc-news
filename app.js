@@ -1,16 +1,18 @@
 const express = require('express');
 const app = express();
 const {getAllTopics, getAllEndpoints} = require('./controllers/topics_controller');
-const {getArticleById} = require('./controllers/articles_controller');
+const {getArticleById, getAllArticles} = require('./controllers/articles_controller');
 const {
     handleServerErrors,
     handleCustomErrors,
     handlePsqlErrors,
   } = require('./errors/index.js');
 
+app.get('/api', getAllEndpoints);
+  
 app.get('/api/topics', getAllTopics);
 
-app.get('/api', getAllEndpoints);
+app.get('/api/articles', getAllArticles);
 
 app.get('/api/articles/:article_id', getArticleById);
 
