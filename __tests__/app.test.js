@@ -62,10 +62,10 @@ describe('GET /api/articles/', () => {
             return request(app)
             .get('/api/articles/2')
             .expect(200)
-            .then((response) => {
-                expect(typeof response.body.articleObj).toBe("object");
-                expect(Object.keys(response.body.articleObj)).toEqual(['article_id', 'title', 'topic', 'author', 'body', 'created_at', 'votes', 'article_img_url']);
-                expect(response.body.articleObj).toEqual({
+            .then(({body}) => {
+                expect(typeof body.articleObj).toBe("object");
+                expect(Object.keys(body.articleObj)).toEqual(['article_id', 'title', 'topic', 'author', 'body', 'created_at', 'votes', 'article_img_url']);
+                expect(body.articleObj).toEqual({
                     article_id: 2,
                     title: "Eight pug gifs that remind me of mitch",
                     topic: "mitch",
@@ -82,16 +82,16 @@ describe('GET /api/articles/', () => {
             return request(app)
             .get('/api/articles/forklift')
             .expect(400)
-            .then((response) => {
-                expect(response.body.msg).toBe('Invalid input');
+            .then(({body}) => {
+                expect(body.msg).toBe('Invalid input');
             });
         });
         test('GET 404: should respond with a 404 if a valid `article_id` is given but the article_id does not exist in the database', () => {
             return request(app)
             .get('/api/articles/99999')
             .expect(404)
-            .then((response) => {
-                expect(response.body.msg).toBe('No article found for article_id: 99999');
+            .then(({body}) => {
+                expect(body.msg).toBe('No article found for article_id: 99999');
             });
         });
     });
@@ -139,8 +139,61 @@ describe('GET /api/articles/', () => {
             return request(app)
             .get('/api/articlez')
             .expect(404)
-            .then((response) => {
-                expect(response.body.msg).toBe("Endpoint does not exist");
+            .then(({body}) => {
+                expect(body.msg).toBe("Endpoint does not exist");
+            });
+        });
+    });
+
+    describe('/api/articles/:article_id/comments', () => {
+        test('GET 200: should respond with an array of all the comments for a given article_id. Each comment object needs to include properties of comment_id, votes, created_at, author, body and article_id', () => {
+            return request(app)
+            .get('/api/articles/3/comments')
+            .expect(200)
+            .then(({body}) => {
+                expect(body.length).toBe(2)
+                body.forEach((comment) => {
+                    expect(comment).toMatchObject({
+                        comment_id: expect.any(Number),
+                        votes: expect.any(Number),
+                        created_at: expect.any(String),
+                        author: expect.any(String),
+                        body: expect.any(String),
+                        article_id: expect.any(Number)
+                    });
+                });
+            })
+        });
+        test('GET 200: all comments in the response should be in descending order according to the created_at date (i.e. most recent comment first, oldest comment last)', () => {
+            return request(app)
+            .get('/api/articles/3/comments')
+            .expect(200)
+            .then(({body}) => {
+                expect(body).toBeSortedBy('created_at', {descending: true})
+            })
+        });
+        test('GET 200: should respond with a 200 when the article_id exists but there are no comments associated with it', () => {
+            return request(app)
+            .get('/api/articles/7/comments')
+            .expect(200)
+            .then(({body}) => {
+                expect(body.msg).toEqual("There are no comments associated with this article!")
+            });
+        });
+        test('GET 400: should respond with a 400 error if given an invalid article_id prameter', () => {
+            return request(app)
+            .get('/api/articles/forklift/comments')
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('Invalid input');
+            });
+        });
+        test('GET 404: should respond with a 404 if a valid `article_id` is given but the article_id does not exist in the database', () => {
+            return request(app)
+            .get('/api/articles/99999/comments')
+            .expect(404)
+            .then(({body}) => {
+                expect(body.msg).toBe('No article found for article_id: 99999');
             });
         });
     });
