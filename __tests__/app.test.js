@@ -97,18 +97,27 @@ describe('GET /api/articles/', () => {
     });
 
     describe('/api/articles', () => {
-        test('GET 200: should respond with an articles array of article objects, each of which should have the following properties: author, title, article_id, topic, created_at, votes, article_img_url, comment_count, (total count of all the comments with this article_id)', () => {
+        test('GET 200: should respond with an articles array of article objects, each of which should have author, title, article_id, topic, created_at, votes, article_img_url, comment_count properties; comment_count hsould be the total count of all the comments with this article_id', () => {
             return request(app)
             .get('/api/articles')
             .expect(200)
             .then(({body}) => {
                 expect(body.length).toBe(12);
                 body.forEach((article) => {
-                    expect(Object.keys(article)).toEqual(['article_id', 'title', 'topic', 'author', 'created_at', 'votes', 'article_img_url', 'comment_count']);
+                    expect(article).toMatchObject({
+                        article_id: expect.any(Number),
+                        title: expect.any(String),
+                        topic: expect.any(String),
+                        author: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        article_img_url: expect.any(String),
+                        comment_count: expect.any(Number)
+                    });
                 });
             });
         });
-        test('GET 200: array of article objects should be sorted by date in descending order', () => {
+        test('GET 200: the array of article objects should be sorted by the "created_at" date in descending order', () => {
             return request(app)
             .get('/api/articles')
             .expect(200)
@@ -116,17 +125,17 @@ describe('GET /api/articles/', () => {
                 expect(body).toBeSortedBy('created_at', {descending: true});
             });
         });
-        test('GET 200: should not have a body property present on any of the article objects', () => {
+        test('GET 200: there should not be a body property on any of the articles', () => {
             return request(app)
             .get('/api/articles')
             .expect(200)
             .then(({body}) => {
                 body.forEach((article) => {
-                    expect(Object.keys(article)).not.toEqual(['article_id', 'title', 'topic', 'author', 'body', 'created_at', 'votes', 'article_img_url', 'comment_count']);
+                    expect(article).not.toHaveProperty('body');
                 });
             });
         });
-        test('GET 404: should respond with a 400 if given a bad request', () => {
+        test('GET 404: should respond with a 404 if given a bad request', () => {
             return request(app)
             .get('/api/articlez')
             .expect(404)
