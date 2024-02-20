@@ -53,5 +53,27 @@
         "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
       "article_id": 1
     }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "serves an array of all comments associated with a given article, sorted by created_at date in descending order",
+    "queries": [],
+    "exampleResponse": [
+      {
+        "comment_id": 11,
+        "votes": 0,
+        "created_at": 1600560600000,
+        "author": "icellusedkars",
+        "body": "Ambidextrous marsupial",
+        "article_id": 3
+      },
+      {
+        "comment_id": 10,
+        "votes": 0,
+        "created_at": 1592641440000,
+        "author": "icellusedkars",
+        "body": "git push origin master",
+        "article_id": 3
+      }
+    ]
   }
 }
