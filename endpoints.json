@@ -10,17 +10,30 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles",
+    "description": "serves an array of all articles, sorted by date in descending order, with no 'body' on any article objects",
     "queries": ["author", "topic", "sort_by", "order"],
     "exampleResponse": {
       "articles": [
         {
-          "title": "Seafood substitutions are increasing",
-          "topic": "cooking",
+          "author": "rugbyStar",
+          "title": "Thoughts on World Rugby",
+          "article_id": 3,
+          "topic": "rugby",
+          "created_at": "2019-05-30T15:59:13.341Z",
+          "votes": 20,
+          "article_img_url":
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          "comment_count": 20
+        },
+        {
           "author": "weegembump",
-          "body": "Text from the article..",
+          "title": "Seafood substitutions are increasing",
+          "article_id": 2,
+          "topic": "cooking",
           "created_at": "2018-05-30T15:59:13.341Z",
           "votes": 0,
+          "article_img_url":
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
           "comment_count": 6
         }
       ]
