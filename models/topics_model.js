@@ -14,3 +14,4 @@ exports.readAllEndpoints = function readAllEndpoints() {
         return parsedEndpoints;
     });
 };
+
