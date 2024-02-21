@@ -221,6 +221,28 @@ describe('POST /api/articles/:article_id/comments', () => {
             expect(body).toHaveProperty('created_at');
         });
     });
+    test('POST 201: should ignore any additional properties given on the request body', () => {
+        const postBody = {
+            username: 'lurker',
+            body: 'The greatest glory in living lies not in never falling, but in rising every time we fall',
+            favesnack: 'peanutbutter'
+        }
+        return request(app)
+        .post('/api/articles/7/comments')
+        .expect(201)
+        .send(postBody)
+        .then(({body}) => {
+            expect(typeof body).toBe("object");
+            expect(body).toMatchObject({
+                comment_id: 19,
+                votes: 0,
+                author: 'lurker',
+                body: 'The greatest glory in living lies not in never falling, but in rising every time we fall',
+                article_id: 7
+            })
+            expect(body).toHaveProperty('created_at');
+        });
+    });
     test('POST 400: should respond with a 400 if the post body object does not have correct username and/or body properties with values of the correct datatype', () => {
         const postBody = {
             faveFood: "peanut butter",
