@@ -2,12 +2,14 @@ const express = require('express');
 const app = express();
 const {getAllTopics, getAllEndpoints} = require('./controllers/topics_controller');
 const {getArticleById, getAllArticles} = require('./controllers/articles_controller');
-const {getCommentsByArticleId} = require('./controllers/comments_controller');
+const {getCommentsByArticleId, postNewComment} = require('./controllers/comments_controller');
 const {
     handleServerErrors,
     handleCustomErrors,
     handlePsqlErrors,
   } = require('./errors/index.js');
+
+app.use(express.json());
 
 app.get('/api', getAllEndpoints);
   
@@ -18,6 +20,8 @@ app.get('/api/articles', getAllArticles);
 app.get('/api/articles/:article_id', getArticleById);
 
 app.get('/api/articles/:article_id/comments', getCommentsByArticleId);
+
+app.post('/api/articles/:article_id/comments', postNewComment);
 
 
 
