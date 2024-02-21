@@ -78,7 +78,7 @@ describe('GET /api/articles/', () => {
                 });
             });
         });
-        test('GET 400: should respond with a 400 error if given an invalid article_id prameter', () => {
+        test('GET 400: should respond with a 400 error if given an invalid article_id parameter', () => {
             return request(app)
             .get('/api/articles/forklift')
             .expect(400)
@@ -96,7 +96,7 @@ describe('GET /api/articles/', () => {
         });
     });
 
-    describe('/api/articles', () => {
+    describe('GET /api/articles', () => {
         test('GET 200: should respond with an articles array of article objects, each of which should have author, title, article_id, topic, created_at, votes, article_img_url, comment_count properties; comment_count hsould be the total count of all the comments with this article_id', () => {
             return request(app)
             .get('/api/articles')
@@ -145,7 +145,7 @@ describe('GET /api/articles/', () => {
         });
     });
 
-    describe('/api/articles/:article_id/comments', () => {
+    describe('GET /api/articles/:article_id/comments', () => {
         test('GET 200: should respond with an array of all the comments for a given article_id. Each comment object needs to include properties of comment_id, votes, created_at, author, body and article_id', () => {
             return request(app)
             .get('/api/articles/3/comments')
@@ -198,3 +198,94 @@ describe('GET /api/articles/', () => {
         });
     });
 });
+
+describe('POST /api/articles/:article_id/comments', () => {
+    test('POST 201: should a username and body property on the request body object and responds with a new comment, when a new comment is successfully added to the database', () => {
+        const postBody = {
+            username: 'lurker',
+            body: 'The greatest glory in living lies not in never falling, but in rising every time we fall'
+        }
+        return request(app)
+        .post('/api/articles/7/comments')
+        .expect(201)
+        .send(postBody)
+        .then(({body}) => {
+            expect(typeof body).toBe("object");
+            expect(body).toMatchObject({
+                comment_id: 19,
+                votes: 0,
+                author: 'lurker',
+                body: 'The greatest glory in living lies not in never falling, but in rising every time we fall',
+                article_id: 7
+            })
+            expect(body).toHaveProperty('created_at');
+        });
+    });
+    test('POST 400: should respond with a 400 if the post body object does not have correct username and/or body properties with values of the correct datatype', () => {
+        const postBody = {
+            faveFood: "peanut butter",
+            body: "The greatest glory in living lies not in never falling, but in rising every time we fall"
+        }
+        return request(app)
+        .post('/api/articles/7/comments')
+        .expect(400)
+        .send(postBody)
+        .then(({body}) => {
+            expect(body.msg).toBe('Invalid input')
+        });
+    });
+    test('POST 400: should respond with a 400 if the post body object has username and body properties but the values are of an incorrect datatype', () => {
+        const postBody = {
+            username: 3,
+            body: ["The greatest glory in living lies not in never falling, but in rising every time we fall"]
+        }
+        return request(app)
+        .post('/api/articles/7/comments')
+        .expect(400)
+        .send(postBody)
+        .then(({body}) => {
+            expect(body.msg).toBe('Invalid input')
+        });
+    });
+    test('POST 400: should respond with a 400 error if given an invalid article_id parameter in the endpoint', () => {
+        const postBody = {
+            username: "lurker",
+            body: "The greatest glory in living lies not in never falling, but in rising every time we fall"
+        }
+        return request(app)
+        .post('/api/articles/forklift/comments')
+        .expect(400)
+        .send(postBody)
+        .then(({body}) => {
+            expect(body.msg).toBe('Invalid input');
+        });
+    });
+    test('POST 404: should respond with a 404 if a valid `article_id` is given in the endpoint, but the article_id does not exist in the database', () => {
+        const postBody = {
+            username: "lurker",
+            body: "The greatest glory in living lies not in never falling, but in rising every time we fall"
+        }
+        return request(app)
+        .post('/api/articles/99999/comments')
+        .expect(404)
+        .send(postBody)
+        .then(({body}) => {
+            expect(body.msg).toBe('No article found for article_id: 99999');
+        });
+    });
+    test('POST 404: should respond with a 404 if a valid username is given, but the corresponding user does not exist in the database', () => {
+        const postBody = {
+            username: "nrmandela",
+            body: "The greatest glory in living lies not in never falling, but in rising every time we fall"
+        }
+        return request(app)
+        .post('/api/articles/7/comments')
+        .expect(404)
+        .send(postBody)
+        .then(({body}) => {
+            expect(body.msg).toBe('User nrmandela not found');
+        });
+    });
+});
+
+

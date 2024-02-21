@@ -10,7 +10,7 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles, sorted by date in descending order, with no 'body' on any article objects",
+    "description": "serves an array of all articles, sorted by date in descending order, with no 'body' for any article",
     "queries": ["author", "topic", "sort_by", "order"],
     "exampleResponse": {
       "articles": [
@@ -40,7 +40,7 @@
     }
   },
   "GET /api/articles/:article_id": {
-    "description": "serves an article object, corresponding to the article_id",
+    "description": "serves an article, corresponding to the article_id",
     "queries": [],
     "exampleResponse": {
       "title": "Living in the shadow of a great man",
@@ -55,7 +55,7 @@
     }
   },
   "GET /api/articles/:article_id/comments": {
-    "description": "serves an array of all comments associated with a given article, sorted by created_at date in descending order",
+    "description": "serves an array of all comments associated with a given article_id, sorted by created_at date in descending order",
     "queries": [],
     "exampleResponse": [
       {
@@ -75,5 +75,17 @@
         "article_id": 3
       }
     ]
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "serves a new comment associated with a given article_id, when successfully added to the database",
+    "queries": [],
+    "example response": {
+      "comment_id": 13,
+      "votes": 0,
+      "created_at": 1592641550000,
+      "author": "lurker",
+      "body": "The greatest glory in living lies not in never falling, but in rising every time we fall",
+      "article_id": 7
+    }
   }
 }
