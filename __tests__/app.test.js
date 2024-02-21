@@ -310,4 +310,106 @@ describe('POST /api/articles/:article_id/comments', () => {
     });
 });
 
+describe('PATCH /api/articles/:article_id', () => {
+    test('PATCH 200: should update an article\'s vote property (positive value) on the requst body', () => {
+        const postBody = {inc_votes: 20}
+        return request(app)
+        .patch('/api/articles/3') 
+        .expect(200)
+        .send(postBody)
+        .then(({body}) => {
+            expect(typeof body).toBe("object");
+            expect(body).toEqual({
+                article_id: 3,
+                title: "Student SUES Mitch!",
+                topic: "mitch",
+                author: "rogersop",
+                body: "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages",
+                created_at: "2020-05-06T01:14:00.000Z",
+                votes: 20,
+                article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+            });
+       });
+    });
+    test('PATCH 200: should successfully update number of votes if given a negative value for inc_votes property on the request body object', () => {
+        const postBody = {inc_votes: -20}
+        return request(app)
+        .patch('/api/articles/3') 
+        .expect(200)
+        .send(postBody)
+        .then(({body}) => {
+            expect(typeof body).toBe("object");
+            expect(body).toEqual({
+                article_id: 3,
+                title: "Student SUES Mitch!",
+                topic: "mitch",
+                author: "rogersop",
+                body: "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages",
+                created_at: "2020-05-06T01:14:00.000Z",
+                votes: -20,
+                article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+            });
+       });
+    });
+    test('PATCH 200: should ignore additional properties on the request body object', () => {
+        const postBody = {inc_votes: -20, favfood: 'peanutbutter'}
+        return request(app)
+        .patch('/api/articles/3') 
+        .expect(200)
+        .send(postBody)
+        .then(({body}) => {
+            expect(typeof body).toBe("object");
+            expect(body).toEqual({
+                article_id: 3,
+                title: "Student SUES Mitch!",
+                topic: "mitch",
+                author: "rogersop",
+                body: "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages",
+                created_at: "2020-05-06T01:14:00.000Z",
+                votes: -20,
+                article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+            });
+       });
+    });
+    test('PATCH 400: should respond with a 400 error if given an invalid article_id prameter', () => {
+        const postBody = {inc_votes: 20}
+        return request(app)
+        .patch('/api/articles/forklift')
+        .expect(400)
+        .send(postBody)
+        .then(({body}) => {
+            expect(body.msg).toBe('Invalid input');
+        });
+    });
+    test('PATCH 400: should respond with a 400 error if not given an object with inc_votes property', () => {
+        const postBody = {}
+        return request(app)
+        .patch('/api/articles/3')
+        .expect(400)
+        .send(postBody)
+        .then(({body}) => {
+            expect(body.msg).toBe('Invalid input');
+        });
+    });
+    test('PATCH 400: should respond with a 400 error if given an invalid inc_votes value', () => {
+        const postBody = {inc_votes: 'peanutbutter'}
+        return request(app)
+        .patch('/api/articles/3')
+        .expect(400)
+        .send(postBody)
+        .then(({body}) => {
+            expect(body.msg).toBe('Invalid input');
+        });
+    });
+    test('PATCH 404: should respond with a 404 if a valid `article_id` is given but the article_id does not exist in the database', () => {
+        const postBody = {inc_votes: 20}
+        return request(app)
+        .patch('/api/articles/99999')
+        .expect(404)
+        .send(postBody)
+        .then(({body}) => {
+            expect(body.msg).toBe('No article found for article_id: 99999');
+        });
+    });
+})
 

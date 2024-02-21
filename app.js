@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const {getAllTopics, getAllEndpoints} = require('./controllers/topics_controller');
-const {getArticleById, getAllArticles} = require('./controllers/articles_controller');
+const {getArticleById, getAllArticles, patchArticleById} = require('./controllers/articles_controller');
 const {getCommentsByArticleId, postNewComment} = require('./controllers/comments_controller');
 const {
     handleServerErrors,
@@ -23,7 +23,7 @@ app.get('/api/articles/:article_id/comments', getCommentsByArticleId);
 
 app.post('/api/articles/:article_id/comments', postNewComment);
 
-
+app.patch('/api/articles/:article_id', patchArticleById);
 
 app.all('/*', (request, response) => {
     response.status(404).send({msg: "Endpoint does not exist"});
