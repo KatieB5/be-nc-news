@@ -87,5 +87,19 @@
       "body": "The greatest glory in living lies not in never falling, but in rising every time we fall",
       "article_id": 7
     }
+  },
+  "PATCH //api/articles/:article_id": {
+    "description": "serves an updated article associated with an article_id",
+    "queries": [],
+    "example response": {
+      "article_id": 3,
+      "title": "Student SUES Mitch!",
+      "topic": "mitch",
+      "author": "rogersop",
+      "body": "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages",
+      "created_at": "2020-05-06T01:14:00.000Z",
+      "votes": -20,
+      "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+    }
   }
 }
