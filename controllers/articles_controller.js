@@ -1,7 +1,10 @@
 const {selectArticleById, selectAllArticles, updateArticleById} = require('../models/articles_model');
 
 exports.getAllArticles = (request, response, next) => {
-    selectAllArticles().then((articlesArr) => {
+    const {topic} = request.query;
+    // const validQueries = [topic];
+
+    selectAllArticles(topic).then((articlesArr) => {
         response.status(200).send(articlesArr)
     }).catch((error) => {
         next(error);

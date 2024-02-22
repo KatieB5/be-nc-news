@@ -98,7 +98,7 @@ describe('GET /api/articles/', () => {
     });
 
     describe('GET /api/articles', () => {
-        test('GET 200: should respond with an articles array of article objects, each of which should have author, title, article_id, topic, created_at, votes, article_img_url, comment_count properties; comment_count hsould be the total count of all the comments with this article_id', () => {
+        test('GET 200: should respond with an articles array of article objects, each of which should have author, title, article_id, topic, created_at, votes, article_img_url, comment_count properties; comment_count should be the total count of all the comments with this article_id', () => {
             return request(app)
             .get('/api/articles')
             .expect(200)
@@ -196,6 +196,71 @@ describe('GET /api/articles/', () => {
             .then(({body}) => {
                 expect(body.msg).toBe('No article found for article_id: 99999');
             });
+        });
+    });
+
+    describe('GET /api/articles?topic', () => {
+        test('GET 200: should respond with an array of all the articles that have the topic given in the query', () => {
+            return request(app)
+            .get('/api/articles?topic=mitch')
+            .expect(200)
+            .then(({body}) => {
+                expect(Array.isArray(body)).toBe(true);
+                expect(body.length).toBe(11);
+            });
+        });
+        test('GET 200: each article object in the array should have author, title, article_id, topic, created_at, votes, article_img_url, comment_count properties; comment_count should be the total count of all the comments with this article_id', () => {
+            return request(app)
+            .get('/api/articles?topic=mitch')
+            .expect(200)
+            .then(({body}) => {
+                body.forEach((article) => {
+                    expect(article).toMatchObject({
+                        article_id: expect.any(Number),
+                        title: expect.any(String),
+                        topic: expect.any(String),
+                        author: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        article_img_url: expect.any(String),
+                        comment_count: expect.any(Number)
+                    });
+                });
+            });
+        });
+        test('GET 200: the array of article objects should be sorted by the "created_at" date in descending order', () => {
+            return request(app)
+            .get('/api/articles?topic=mitch')
+            .expect(200)
+            .then(({body}) => {
+                expect(body).toBeSortedBy('created_at', {descending: true});
+            });
+        });
+        test('GET 200: there should not be a body property on any of the articles', () => {
+            return request(app)
+            .get('/api/articles?topic=mitch')
+            .expect(200)
+            .then(({body}) => {
+                body.forEach((article) => {
+                    expect(article).not.toHaveProperty('body');
+                });
+            });
+        });
+        test('GET 404: should respond with a 404 if given a bad request', () => {
+            return request(app)
+            .get('/api/articlez?topic=cats')
+            .expect(404)
+            .then(({body}) => {
+                expect(body.msg).toBe("Endpoint does not exist");
+            });
+        });
+        test('GET 404: should respond with a 404 if a valid `topic` query is given in the endpoint, but there are no articles with that topic values in the database ', () => {
+            return request(app)
+            .get('/api/articles?topic=peanutbutter')
+            .expect(404)
+            .then(({body}) => {
+                expect(body.msg).toBe("No article found for topic: peanutbutter");
+            }); 
         });
     });
 });
