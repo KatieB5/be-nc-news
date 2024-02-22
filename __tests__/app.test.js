@@ -381,14 +381,22 @@ describe('PATCH /api/articles/:article_id', () => {
             expect(body.msg).toBe('Invalid input');
         });
     });
-    test('PATCH 400: should respond with a 400 error if not given an object with inc_votes property', () => {
+    test('PATCH 200: should respond with a 200 and return the original single article object if not given an object with inc_votes property', () => {
         const postBody = {}
         return request(app)
         .patch('/api/articles/3')
-        .expect(400)
+        .expect(200)
         .send(postBody)
         .then(({body}) => {
-            expect(body.msg).toBe('Invalid input');
+            expect(body).toEqual({                article_id: 3,
+                title: "Student SUES Mitch!",
+                topic: "mitch",
+                author: "rogersop",
+                body: "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages",
+                created_at: "2020-05-06T01:14:00.000Z",
+                votes: 0,
+                article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+            });
         });
     });
     test('PATCH 400: should respond with a 400 error if given an invalid inc_votes value', () => {
