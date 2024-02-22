@@ -246,6 +246,14 @@ describe('GET /api/articles/', () => {
                 });
             });
         });
+        test('GET 200: should return an empty array if given a valid topic that exists in the database but no articles are associated with that topic', () => {
+            return request(app)
+            .get('/api/articles?topic=paper')
+            .expect(200)
+            .then(({body}) => {
+                expect(body).toEqual([]);
+            });
+        });
         test('GET 404: should respond with a 404 if given a bad request', () => {
             return request(app)
             .get('/api/articlez?topic=cats')
@@ -254,12 +262,12 @@ describe('GET /api/articles/', () => {
                 expect(body.msg).toBe("Endpoint does not exist");
             });
         });
-        test('GET 404: should respond with a 404 if a valid `topic` query is given in the endpoint, but there are no articles with that topic values in the database ', () => {
+        test('GET 404: should respond with a 404 if given an invalid topic that does not exist in the database', () => {
             return request(app)
             .get('/api/articles?topic=peanutbutter')
             .expect(404)
             .then(({body}) => {
-                expect(body.msg).toBe("No article found for topic: peanutbutter");
+                expect(body.msg).toBe('Topic "peanutbutter" does not exist');
             }); 
         });
     });

@@ -1,14 +1,26 @@
 const {selectArticleById, selectAllArticles, updateArticleById} = require('../models/articles_model');
+const {selectTopicByTopicName} = require('../models/topics_model')
 
 exports.getAllArticles = (request, response, next) => {
     const {topic} = request.query;
-    // const validQueries = [topic];
 
-    selectAllArticles(topic).then((articlesArr) => {
-        response.status(200).send(articlesArr)
-    }).catch((error) => {
-        next(error);
-    });
+    if (topic) {
+        const promises = [selectTopicByTopicName(topic), selectAllArticles(topic)]
+    
+        Promise.all(promises)
+        .then((promisesArr) => {
+            response.status(200).send(promisesArr[1])
+        }).catch((error) => {
+            next(error);
+        });
+    } else {
+        selectAllArticles().then((articlesArr) => {
+            response.status(200).send(articlesArr)
+        }).catch((error) => {
+            next(error);
+        })
+    }
+
 };
 
 exports.getArticleById = (request, response, next) => {

@@ -13,11 +13,6 @@ exports.selectAllArticles = (topic) => {
 
         return db.query(queryStrWithTopic, [topic])
         .then(({rows}) => {
-
-            if(rows.length === 0) {
-                return Promise.reject({status: 404, msg: `No article found for topic: ${topic}`})
-            }
-
             return rows;
         })
     } else {
