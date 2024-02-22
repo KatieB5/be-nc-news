@@ -5,6 +5,7 @@ const seed = require('../db/seeds/seed');
 const data = require('../db/data/test-data/index.js');
 const fs = require('fs/promises');
 const endpointsFile = require('../endpoints.json');
+const {selectCommentById} = require('../models/comments_model');
 
 beforeEach(() => seed(data));
 
@@ -200,7 +201,7 @@ describe('GET /api/articles/', () => {
 });
 
 describe('POST /api/articles/:article_id/comments', () => {
-    test('POST 201: should a username and body property on the request body object and responds with a new comment, when a new comment is successfully added to the database', () => {
+    test('POST 201: should take a username and body property on the request body object and responds with a new comment, when a new comment is successfully added to the database', () => {
         const postBody = {
             username: 'lurker',
             body: 'The greatest glory in living lies not in never falling, but in rising every time we fall'
@@ -419,5 +420,32 @@ describe('PATCH /api/articles/:article_id', () => {
             expect(body.msg).toBe('No article found for article_id: 99999');
         });
     });
-})
+});
+
+describe('DELETE /api/comments/:comment_id', () => {
+    test('DELETE 204: should respond with a 204 and no content when a comment has successfully been deleted according to the given comment_id', () => {
+        return request(app)
+        .delete('/api/comments/2')
+        .expect(204)
+        .then(({body}) => {
+            expect(body).toEqual({})
+        });
+    });
+    test('GET 400: should respond with a 400 error if given an invalid comment_id prameter', () => {
+        return request(app)
+        .delete('/api/comments/forklift')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Invalid input');
+        });
+    });
+    test('GET 404: should respond with a 404 if a valid `comment_id` is given but the comment_id does not exist in the database', () => {
+        return request(app)
+        .delete('/api/comments/9999')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('No comment found for comment_id: 9999');
+        });
+    });
+});
 

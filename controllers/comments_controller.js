@@ -1,4 +1,4 @@
-const {selectCommentsByArticleId, insertNewComment} = require('../models/comments_model');
+const {selectCommentsByArticleId, insertNewComment, removeCommentById} = require('../models/comments_model');
 const {selectArticleById} = require('../models/articles_model');
 const {selectUserByUsername} = require('../models/users_model');
 
@@ -34,4 +34,13 @@ exports.postNewComment = (request, response, next) => {
     }).catch((error) => {
         next(error);
     });
+};
+
+exports.deleteCommentById = (request, response, next) => {
+    const {comment_id} = request.params;
+        removeCommentById(comment_id).then((deletedObj) => {
+            response.status(204).send();
+        }).catch((error) => {
+            next(error);
+        })
 };

@@ -20,7 +20,6 @@ exports.getArticleById = (request, response, next) => {
 exports.patchArticleById = (request, response, next) => {
     const {article_id} = request.params;
     const {inc_votes} = request.body;
-    console.log(inc_votes)
 
     if(inc_votes === undefined) {
         selectArticleById(article_id).then((articleObj) => {
