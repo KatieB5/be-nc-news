@@ -20,19 +20,26 @@ exports.getArticleById = (request, response, next) => {
 exports.patchArticleById = (request, response, next) => {
     const {article_id} = request.params;
     const {inc_votes} = request.body;
+    console.log(inc_votes)
 
-    if (!inc_votes || typeof inc_votes !== "number") {
+    if(inc_votes === undefined) {
+        selectArticleById(article_id).then((articleObj) => {
+            response.status(200).send(articleObj)
+        }).catch((error) => {
+            next(error)
+        });
+    } else if (inc_votes && typeof inc_votes !== "number") {
         return response.status(400).send({msg: 'Invalid input'});
+    } else {
+        const promises = [selectArticleById(article_id), updateArticleById(article_id, inc_votes)];
+    
+        Promise.all(promises)
+        .then((resolvedPromises) => {
+            response.status(200).send(resolvedPromises[1])
+        }).catch((error) => {
+            next(error);
+        });
     }
-
-    const promises = [selectArticleById(article_id), updateArticleById(article_id, inc_votes)];
-
-    Promise.all(promises)
-    .then((resolvedPromises) => {
-        response.status(200).send(resolvedPromises[1])
-    }).catch((error) => {
-        next(error);
-    });
 };
 
 
