@@ -5,7 +5,7 @@ exports.handleCustomErrors = (error, request, response, next) => {
 };
 
 exports.handlePsqlErrors = (error, request, response, next) => {
-    if (error.code === '22P02') {
+    if (error.code === '22P02' || error.code === 23505) {
         response.status(400).send({ msg: 'Invalid input' });
     } else next(error);
 };

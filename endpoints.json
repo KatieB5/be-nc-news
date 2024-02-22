@@ -88,7 +88,7 @@
       "article_id": 7
     }
   },
-  "PATCH //api/articles/:article_id": {
+  "PATCH /api/articles/:article_id": {
     "description": "serves an updated article associated with an article_id",
     "queries": [],
     "example response": {
@@ -101,5 +101,9 @@
       "votes": -20,
       "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
     }
+  },
+  "DELETE //api/comments/:comment_id": {
+    "description": "serves no content; removes a comment by the given comment_id",
+    "queries": []
   }
 }
