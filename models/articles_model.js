@@ -1,22 +1,29 @@
 const db = require('../db/connection');
 
-exports.selectAllArticles = (topic) => {
+exports.selectAllArticles = (topic, sort_by='created_at') => {
+
+    const validSoryBys = ["title", "topic", "author", "created_at", "votes", "article_img_url"];
 
     const queryStrSelect = 'SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id)::INT AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id '
 
-    const queryStrGroupAndOrder = ' GROUP BY articles.article_id ORDER BY articles.created_at DESC'
+    const queryStrGroup = ' GROUP BY articles.article_id'
 
+    if (!validSoryBys.includes(sort_by)) {
+        return Promise.reject({status: 400, msg: `${sort_by} is not a valid sort_by query`})
+    } 
+    
     if (topic) {
-        const topicStr = 'WHERE articles.topic = $1'
+        const topicStr = 'WHERE articles.topic = $1';
         
-        const queryStrWithTopic = queryStrSelect + topicStr + queryStrGroupAndOrder;
+        const queryStrWithTopic = queryStrSelect + topicStr + queryStrGroup + ' ORDER BY articles.' + sort_by + ' DESC'
 
         return db.query(queryStrWithTopic, [topic])
         .then(({rows}) => {
             return rows;
         })
+
     } else {
-        const queryStr = queryStrSelect + queryStrGroupAndOrder;
+        const queryStr = queryStrSelect + queryStrGroup + ' ORDER BY articles.' + sort_by + ' DESC';
         return db.query(queryStr)
         .then(({rows}) => {
             return rows;
