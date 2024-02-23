@@ -605,3 +605,36 @@ describe('GET /api/users/', () => {
     });
 });
 
+describe('GET /api/users/:username', () => {
+    test('GET 200: should return a single user object, with username, avatar_url and name properties, when passed their user as a parameter', () => {
+        return request(app)
+        .get('/api/users/icellusedkars')
+        .expect(200)
+        .then(({body}) => {
+            expect(typeof body).toBe("object");
+            expect(Array.isArray(body)).toBe(false);
+            expect(body).toMatchObject({
+                username: expect.any(String),
+                avatar_url: expect.any(String),
+                name: expect.any(String)
+            });
+        });
+    });
+    test('GET 404: should respond with a 404 and error message if given a valid username that does not exist in the database', () => {
+        return request(app)
+        .get('/api/users/peanutbutter')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe("User peanutbutter not found");
+        });
+    });
+    test('GET 404: should respond with a 404 and error message if given an endpoint that does not exist', () => {
+        return request(app)
+        .get('/api/userz/icellusedkars')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe("Endpoint does not exist");
+        });
+    });
+})
+
