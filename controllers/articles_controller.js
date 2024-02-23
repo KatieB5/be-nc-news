@@ -2,7 +2,7 @@ const {selectArticleById, selectAllArticles, updateArticleById} = require('../mo
 const {selectTopicByTopicName} = require('../models/topics_model')
 
 exports.getAllArticles = (request, response, next) => {
-    const {topic} = request.query;
+    const {topic, sort_by, order} = request.query;
 
     if (topic) {
         const promises = [selectTopicByTopicName(topic), selectAllArticles(topic)]
@@ -14,7 +14,7 @@ exports.getAllArticles = (request, response, next) => {
             next(error);
         });
     } else {
-        selectAllArticles().then((articlesArr) => {
+        selectAllArticles(topic, sort_by, order).then((articlesArr) => {
             response.status(200).send(articlesArr)
         }).catch((error) => {
             next(error);

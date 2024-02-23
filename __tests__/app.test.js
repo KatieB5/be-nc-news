@@ -144,6 +144,66 @@ describe('GET /api/articles/', () => {
         });
     });
 
+    describe('GET /api/articles (sort_by and order queries)', () => {
+        describe('GET /api/articles?sort_by', () => {
+            test('GET 200: should return an array of articles sorted by any valid sort_by column name passed in on the request query', () => {
+                return request(app)
+                .get('/api/articles?sort_by=votes')
+                .expect(200)
+                .then(({body}) => {
+                    expect(body.length).toBe(12);
+                    expect(Array.isArray(body)).toBe(true);
+                    expect(body).toBeSortedBy('votes', {descending: true})
+                });
+            });
+            test('GET 400: should return 400 and error message when given an invalid sort_by query', () => {
+                return request(app)
+                .get('/api/articles?sort_by=3')
+                .expect(400)
+                .then(({body}) => {
+                    expect(body.msg).toBe('3 is not a valid sort_by query')
+                });
+            });
+            test('GET 404: should respond with a 404 if given a bad request', () => {
+                return request(app)
+                .get('/api/articlez?sort_by=votes')
+                .expect(404)
+                .then(({body}) => {
+                    expect(body.msg).toBe('Endpoint does not exist')
+                }); 
+            });
+        });
+
+        describe('GET /api/articles?order', () => {
+            test('GET 200: should return an array of articles ordered by a valid order query value i.e. asc or desc (default = descending)', () => {
+                return request(app)
+                .get('/api/articles?order=asc')
+                .expect(200)
+                .then(({body}) => {
+                    expect(body.length).toBe(12);
+                    expect(Array.isArray(body)).toBe(true);
+                    expect(body).toBeSortedBy('created_at', {descending: false})
+                });
+            });
+            test('GET 400: should return 400 and error message when given an invalid order query', () => {
+                return request(app)
+                .get('/api/articles?order=cats')
+                .expect(400)
+                .then(({body}) => {
+                    expect(body.msg).toBe('cats is not a valid order query')
+                });
+            });
+            test('GET 404: should respond with a 404 if given a bad request', () => {
+                return request(app)
+                .get('/api/articlez?order=asc')
+                .expect(404)
+                .then(({body}) => {
+                    expect(body.msg).toBe('Endpoint does not exist')
+                }); 
+            });
+        });
+    });
+
     describe('GET /api/articles/:article_id/comments', () => {
         test('GET 200: should respond with an array of all the comments for a given article_id. Each comment object needs to include properties of comment_id, votes, created_at, author, body and article_id', () => {
             return request(app)
