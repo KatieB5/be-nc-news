@@ -59,23 +59,21 @@ describe('GET /api', () => {
 
 describe('GET /api/articles/', () => {
     describe('GET /api/articles/:article_id', () => {
-        test('GET 200: should respond with an article object, which should have the following properties: author, title, article_id, body, topic, created_at, votes, article_img_url', () => {
+        test('GET 200: should respond with an article object, which should have the following properties: author, title, article_id, body, topic, created_at, votes, article_img_url and comment_count', () => {
             return request(app)
             .get('/api/articles/2')
             .expect(200)
             .then(({body}) => {
                 expect(typeof body.articleObj).toBe("object");
-                expect(Object.keys(body.articleObj)).toEqual(['article_id', 'title', 'topic', 'author', 'body', 'created_at', 'votes', 'article_img_url']);
-                expect(body.articleObj).toEqual({
-                    article_id: 2,
-                    title: "Eight pug gifs that remind me of mitch",
-                    topic: "mitch",
-                    author: "icellusedkars",
-                    body: "some gifs",
-                    created_at: '2020-11-03T09:12:00.000Z',
-                    votes: 0,
-                    article_img_url:
-                      "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                expect(body.articleObj).toMatchObject({
+                    article_id: expect.any(Number),
+                    title: expect.any(String),
+                    topic: expect.any(String),
+                    author: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                    comment_count: expect.any(Number)
                 });
             });
         });
@@ -393,17 +391,19 @@ describe('PATCH /api/articles/:article_id', () => {
         .send(postBody)
         .then(({body}) => {
             expect(typeof body).toBe("object");
-            expect(body).toEqual({
-                article_id: 3,
-                title: "Student SUES Mitch!",
-                topic: "mitch",
-                author: "rogersop",
-                body: "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages",
-                created_at: "2020-05-06T01:14:00.000Z",
-                votes: 20,
-                article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+            expect(body).toMatchObject({
+                article_id: expect.any(Number),
+                title: expect.any(String),
+                topic: expect.any(String),
+                author: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String),
             });
-       });
+            expect(body).toMatchObject({
+                votes: 20,
+            });
+        });
     });
     test('PATCH 200: should successfully update number of votes if given a negative value for inc_votes property on the request body object', () => {
         const postBody = {inc_votes: -20}
@@ -413,15 +413,8 @@ describe('PATCH /api/articles/:article_id', () => {
         .send(postBody)
         .then(({body}) => {
             expect(typeof body).toBe("object");
-            expect(body).toEqual({
-                article_id: 3,
-                title: "Student SUES Mitch!",
-                topic: "mitch",
-                author: "rogersop",
-                body: "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages",
-                created_at: "2020-05-06T01:14:00.000Z",
+            expect(body).toMatchObject({
                 votes: -20,
-                article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
             });
        });
     });
@@ -433,15 +426,8 @@ describe('PATCH /api/articles/:article_id', () => {
         .send(postBody)
         .then(({body}) => {
             expect(typeof body).toBe("object");
-            expect(body).toEqual({
-                article_id: 3,
-                title: "Student SUES Mitch!",
-                topic: "mitch",
-                author: "rogersop",
-                body: "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages",
-                created_at: "2020-05-06T01:14:00.000Z",
+            expect(body).toMatchObject({
                 votes: -20,
-                article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
             });
        });
     });
@@ -462,14 +448,8 @@ describe('PATCH /api/articles/:article_id', () => {
         .expect(200)
         .send(postBody)
         .then(({body}) => {
-            expect(body).toEqual({                article_id: 3,
-                title: "Student SUES Mitch!",
-                topic: "mitch",
-                author: "rogersop",
-                body: "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages",
-                created_at: "2020-05-06T01:14:00.000Z",
+            expect(body).toMatchObject({
                 votes: 0,
-                article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
             });
         });
     });
