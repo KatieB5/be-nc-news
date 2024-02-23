@@ -173,6 +173,35 @@ describe('GET /api/articles/', () => {
                 }); 
             });
         });
+
+        describe('GET /api/articles?order', () => {
+            test('GET 200: should return an array of articles ordered by a valid order query value i.e. asc or desc (default = descending)', () => {
+                return request(app)
+                .get('/api/articles?order=asc')
+                .expect(200)
+                .then(({body}) => {
+                    expect(body.length).toBe(12);
+                    expect(Array.isArray(body)).toBe(true);
+                    expect(body).toBeSortedBy('created_at', {descending: false})
+                });
+            });
+            test('GET 400: should return 400 and error message when given an invalid order query', () => {
+                return request(app)
+                .get('/api/articles?order=cats')
+                .expect(400)
+                .then(({body}) => {
+                    expect(body.msg).toBe('cats is not a valid order query')
+                });
+            });
+            test('GET 404: should respond with a 404 if given a bad request', () => {
+                return request(app)
+                .get('/api/articlez?order=asc')
+                .expect(404)
+                .then(({body}) => {
+                    expect(body.msg).toBe('Endpoint does not exist')
+                }); 
+            });
+        });
     });
 
     describe('GET /api/articles/:article_id/comments', () => {
