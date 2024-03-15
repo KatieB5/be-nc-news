@@ -1,8 +1,8 @@
 # Northcoders News API
 
-### Introduction
+## Introduction
 
-This Northcoders (NC) News API is a RESTful HTTP API designed to serve information on users, topics, articles, and comments to a front-end architecture (awaiting construction...). 
+This Northcoders (NC) News API is a RESTful HTTP API designed to serve information on users, topics, articles, and comments to a front-end architecture (https://katieb5-nc-news.netlify.app/). 
 
 There are 3 databases in this project:
     - A test database with simple test data
